@@ -1,6 +1,8 @@
 require:
   - rubocop-rspec
   - rubocop-rails
+  - rubocop-capybara
+  - rubocop-factory_bot
 
 # Reasoning: these can happen pretty frequently and tend to cover up more important
 # style violations. We may want to consider being more surgical in disabling them.
