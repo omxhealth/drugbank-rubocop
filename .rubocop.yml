@@ -23,10 +23,9 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Enabled: false
 
-# Default is 80, which seemed a bit restrictive. The team discussed and decided to
-# try 100.
+# Default is 80, which seemed a bit restrictive. The team discussed and decided to try 120.
 Layout/LineLength:
-  Max: 100
+  Max: 120
 
 # Reasoning: without the ability to do this, you often end up reassigning very
 # different values to the same variable or creating meaningless intermediate
@@ -48,6 +47,11 @@ Style/PercentLiteralDelimiters:
     '%w': '()'
     '%s': '()'
 
+# Don't auto-correct, leave it up to the developer. Sometimes it is clearer to explictly
+# return nil.
+Style/EmptyElse:
+  AutoCorrect: false
+  
 # Reasoning: other values lead to too much indentation
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
@@ -137,6 +141,9 @@ Lint/RaiseException:
 Lint/StructNewOverride:
   Enabled: true
 
+Lint/UnusedMethodArgument:
+  AutoCorrect: false
+  
 Style/ExponentialNotation:
   Enabled: true
 
@@ -166,6 +173,11 @@ Style/HashSyntax:
 Rails/BulkChangeTable:
   Enabled: false
 
+# Sometimes we want to direct our output to stdout via puts, instead of defaulting to the
+# Rails logger. Don't auto-correct, leave it up to the developer.
+Rails/Output:
+  AutoCorrect: false
+  
 # This is generally a good idea, but ViewComponent parameters are always named and we
 # want them to more or less feel like custom HTML tags, where the named parameters map
 # to attributes. HTML tags don't really put a limit on the number of attributes, and
