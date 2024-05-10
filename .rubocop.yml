@@ -6,33 +6,95 @@ require:
 
 # Exclude entire directories/files from being linted.
 AllCops:
+  # Enable newly added cops by default.
+  NewCops: enable
   Exclude:
     - '**/*.slim'
     - 'lib/tasks/local.rake' # For running random stuff in dev.
     - 'db/' # schema and migrations
 
+# The ordering of gems in the Gemfile make sense, keeping Rails stuff
+# at the top, and organizing under different comment sections. Additionally,
+# some gems are order-dependant.
+Bundler/OrderedGems:
+  Enabled: false
+
+# Default is 80, which seemed a bit restrictive. The team discussed and decided to
+# try 120.
 Layout/LineLength:
   Max: 120
 
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
+# Reasoning: other values lead to too much indentation
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# Methods that take a single array or hash are quite readable when the method
+# parentheses and the hash brace (or array bracket) are on the same line. The
+# default is annoying to line up right and wastes space (potentially pushing
+# us into lines that are too long).
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
 
 # Enforce either the table-style (aligned values) or normal style.
 Layout/HashAlignment:
   EnforcedColonStyle:
     - key
-    - table  
+    - table
 
-# Note: Different from Shopify Ruby Guide
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 Lint/RaiseException:
   Enabled: true
 
-# Note: Different from Shopify Ruby Guide
 Lint/StructNewOverride:
   Enabled: true
 
+Lint/UnusedMethodArgument:
+  AutoCorrect: false
+
+# Reasoning: these can happen pretty frequently and tend to cover up more important
+# style violations. We may want to consider being more surgical in disabling them.
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# This is generally a good idea, but ViewComponent parameters are always named and we
+# want them to more or less feel like custom HTML tags, where the named parameters map
+# to attributes. HTML tags don't really put a limit on the number of attributes, and
+# allowing more attributes here encourages making components a little more multi-purpose.
+# We might want to adjust a bit if we find allowing so many parameters reduces modularity
+# through composition in cases where this makes more sense.
+Metrics/ParameterLists:
+  Exclude:
+    - 'app/components/**/*.rb'
+
+# Reasoning: without the ability to do this, you often end up reassigning very
+# different values to the same variable or creating meaningless intermediate
+# variables, which can become more confusing than getting used to block chains.
+Style/MultilineBlockChain:
+  Enabled: false
+
 # There is lots of existing code using %i() etc.
-# Note: Different from Shopify Ruby Guide
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: '()'
@@ -40,67 +102,49 @@ Style/PercentLiteralDelimiters:
     '%w': '()'
     '%s': '()'
 
+# Enforcing top level module documentation on helpers isn't really helpful. The
+# comment will likely be redundant.
+Style/Documentation:
+  Exclude:
+    - 'app/**/*.rb'
+    - 'db/migrate/**/*.rb'
+    - 'lib/ui/components/previews/**/*.rb'
+
+# We prefer the compact style and saving the level of indentation
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# This rule has good intent but isn't discriminating enough for cases that really need
+# guard clauses vs ones where explicit if statements are more readable. It seems to
+# interpret any final if statement as something that should be a guard clause.
+Style/GuardClause:
+  Enabled: false
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/HashSyntax:
+  # We're not sure about the new hash shorthand just yet. We don't want to
+  # force people to use it, but also don't want to force them to not use it.
+  EnforcedShorthandSyntax: either
+
 # Don't auto-correct, leave it up to the developer. Sometimes it is clearer to explictly
 # return nil.
 Style/EmptyElse:
   AutoCorrect: false
 
-# We prefer the compact style and saving the level of indentation
-Style/ClassAndModuleChildren:
-  Enabled: false
-  
-# Note: Different from Shopify Ruby Guide
-Style/ExponentialNotation:
-  Enabled: true
-
-# Note: Different from Shopify Ruby Guide
-Style/HashEachMethods:
-  Enabled: true
-
-# Note: Different from Shopify Ruby Guide
-Style/HashTransformKeys:
-  Enabled: true
-
-# Note: Different from Shopify Ruby Guide
-Style/HashTransformValues:
-  Enabled: true
-
-# Note: Different from Shopify Ruby Guide
-Style/StringLiterals:
-   EnforcedStyle: single_quotes
-
-###
-### RSpec Cops
-###
-
-# These rules just don't align with how we write specs
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/MultipleExpectations:
-  Enabled: false
-
-RSpec/InstanceVariable:
-  Enabled: false
-
-RSpec/BeforeAfterAll:
-  Enabled: false
-
-RSpec/SpecFilePathFormat:
-  Enabled: false
-
-RSpec/SpecFilePathSuffix:
-  Enabled: false
-
-# Maybe we're doing some unnecessary nesting, but it doesn't seem out of the ordinary for us to
-# need a little more nesting. The default is 3. If we start wanting to bump it up higher than
-# this, though, we may want to revisit what we're nesting for.
-RSpec/NestedGroups:
-  Max: 4
-
-###
+##############
 ### Rails Cops
-###
+##############
 
 # We are smart enough to know when it's okay to skip model validations.
 Rails/SkipsModelValidations:
@@ -127,3 +171,32 @@ Rails/BulkChangeTable:
 # Rails logger. Don't auto-correct, leave it up to the developer.
 Rails/Output:
   AutoCorrect: false
+
+##############
+### RSpec Cops
+##############
+
+# These rules just don't align with how we write specs
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/BeforeAfterAll:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/SpecFilePathSuffix:
+  Enabled: false
+
+# Maybe we're doing some unnecessary nesting, but it doesn't seem out of the ordinary for us to
+# need a little more nesting. The default is 3. If we start wanting to bump it up higher than
+# this, though, we may want to revisit what we're nesting for.
+RSpec/NestedGroups:
+  Max: 4
