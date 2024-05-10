@@ -1,0 +1,177 @@
+require:
+  - rubocop-rspec
+  - rubocop-rails
+
+# Reasoning: these can happen pretty frequently and tend to cover up more important
+# style violations. We may want to consider being more surgical in disabling them.
+
+Metrics/BlockLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+# These count paths through a method to guage complexity. We've been bumping up
+# the numbers for a while and it still seems to mark code that we're fine with
+# or is so obvious that we know we should fix it eventually.
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Default is 80, which seemed a bit restrictive. The team discussed and decided to
+# try 100.
+Layout/LineLength:
+  Max: 100
+
+# Reasoning: without the ability to do this, you often end up reassigning very
+# different values to the same variable or creating meaningless intermediate
+# variables, which can become more confusing than getting used to block chains.
+Style/MultilineBlockChain:
+  Enabled: false
+
+# The ordering of gems in the Gemfile make sense, keeping Rails stuff
+# at the top, and organizing under different comment sections. Additionally,
+# some gems are order-dependant.
+Bundler/OrderedGems:
+  Enabled: false
+
+# There is lots of existing code using %i() etc.
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: '()'
+    '%i': '()'
+    '%w': '()'
+    '%s': '()'
+
+# Reasoning: other values lead to too much indentation
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# Methods that take a single array or hash are quite readable when the method
+# parentheses and the hash brace (or array bracket) are on the same line. The
+# default is annoying to line up right and wastes space (potentially pushing
+# us into lines that are too long).
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+# Enforce either the table-style (aligned values) or normal style.
+Layout/HashAlignment:
+  EnforcedColonStyle:
+    - key
+    - table
+
+# Enforcing top level module documentation on helpers isn't really helpful. The
+# comment will likely be redundant.
+Style/Documentation:
+  Exclude:
+    - 'app/**/*.rb'
+    - 'db/migrate/**/*.rb'
+    - 'lib/ui/components/previews/**/*.rb'
+
+# Exclude entire directories/files from being linted.
+AllCops:
+  # Enable newly added cops by default.
+  NewCops: enable
+  Exclude:
+    - '**/*.slim'
+    - 'lib/tasks/local.rake' # For running random stuff in dev.
+    - 'db/' # schema and migrations
+
+# We prefer the compact style and saving the level of indentation
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# This rule has good intent but isn't discriminating enough for cases that really need
+# guard clauses vs ones where explicit if statements are more readable. It seems to
+# interpret any final if statement as something that should be a guard clause.
+Style/GuardClause:
+  Enabled: false
+
+# These rules just don't align with how we write specs
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/BeforeAfterAll:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/SpecFilePathSuffix:
+  Enabled: false
+
+# Maybe we're doing some unnecessary nesting, but it doesn't seem out of the ordinary for us to
+# need a little more nesting. The default is 3. If we start wanting to bump it up higher than
+# this, though, we may want to revisit what we're nesting for.
+RSpec/NestedGroups:
+  Max: 4
+
+# We are smart enough to know when it's okay to skip model validations.
+Rails/SkipsModelValidations:
+  Enabled: false
+
+# In our code, this seems to almost always be false positives.
+# Also, rubocop format broke code autocorrecting this rule
+Rails/DynamicFindBy:
+  Enabled: false
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/HashSyntax:
+  # We're not sure about the new hash shorthand just yet. We don't want to
+  # force people to use it, but also don't want to force them to not use it.
+  EnforcedShorthandSyntax: either
+
+# This suggestion comes up when using add_index in migrations, which is the default
+# generated code. Although it looks like using `change_table do |t|` and then `t.index`
+# calls in place of `add_index` would be equivalent, it's hard to find any evidence of
+# this in practice. Given the lack of direction to avoid triggering this cop (at least
+# when adding indexes) and the fact that rails generates it out of the box this way,
+# keeping this rule in place only encourages us to leave a cop unaddressed. Silencing
+# the cop won't prevent use of bulk operations, of course, and if they become more
+# standard so that we're not triggering it with every new table migration we add, then
+# we might want to take this out.
+Rails/BulkChangeTable:
+  Enabled: false
+
+# This is generally a good idea, but ViewComponent parameters are always named and we
+# want them to more or less feel like custom HTML tags, where the named parameters map
+# to attributes. HTML tags don't really put a limit on the number of attributes, and
+# allowing more attributes here encourages making components a little more multi-purpose.
+# We might want to adjust a bit if we find allowing so many parameters reduces modularity
+# through composition in cases where this makes more sense.
+Metrics/ParameterLists:
+  Exclude:
+    - 'app/components/**/*.rb'
