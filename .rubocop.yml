@@ -65,6 +65,10 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
+# Note: Different from Shopify Ruby Guide
+Style/StringLiterals:
+   EnforcedStyle: single_quotes
+
 ###
 ### RSpec Cops
 ###
