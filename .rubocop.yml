@@ -8,9 +8,9 @@ AllCops:
   # Enable newly added cops by default.
   NewCops: enable
   Exclude:
-    - '**/*.slim'
-    - 'lib/tasks/local.rake' # For running random stuff in dev.
-    - 'db/' # schema and migrations
+    - "**/*.slim"
+    - "lib/tasks/local.rake" # For running random stuff in dev.
+    - "db/" # schema and migrations
 
 # The ordering of gems in the Gemfile make sense, keeping Rails stuff
 # at the top, and organizing under different comment sections. Additionally,
@@ -84,8 +84,9 @@ Metrics/PerceivedComplexity:
 # We might want to adjust a bit if we find allowing so many parameters reduces modularity
 # through composition in cases where this makes more sense.
 Metrics/ParameterLists:
+  CountKeywordArgs: false # Kwargs don't add as much complexity as positional args
   Exclude:
-    - 'app/components/**/*.rb'
+    - "app/components/**/*.rb"
 
 # Reasoning: without the ability to do this, you often end up reassigning very
 # different values to the same variable or creating meaningless intermediate
@@ -96,18 +97,18 @@ Style/MultilineBlockChain:
 # There is lots of existing code using %i() etc.
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
-    default: '()'
-    '%i': '()'
-    '%w': '()'
-    '%s': '()'
+    default: "()"
+    "%i": "()"
+    "%w": "()"
+    "%s": "()"
 
 # Enforcing top level module documentation on helpers isn't really helpful. The
 # comment will likely be redundant.
 Style/Documentation:
   Exclude:
-    - 'app/**/*.rb'
-    - 'db/migrate/**/*.rb'
-    - 'lib/ui/components/previews/**/*.rb'
+    - "app/**/*.rb"
+    - "db/migrate/**/*.rb"
+    - "lib/ui/components/previews/**/*.rb"
 
 # We prefer the compact style and saving the level of indentation
 Style/ClassAndModuleChildren:
